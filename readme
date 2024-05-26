@@ -1,0 +1,5 @@
+# this project is a practical hands-on on Loops, Functions, Libraries and modules.
+## Steps to follow
+- install the "tabulate" library
+- run "chmod 700" to run the script
+- then run "python index.py"
