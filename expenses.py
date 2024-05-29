@@ -1,53 +1,55 @@
-import csv
 import color
 import os
+import expenses_data
 from collections import defaultdict
+from expenses_data import DATA
 
-DATA = "data/expenses_data.csv"
+def save_data(data):
+    with open("expenses_data.py", mode="w") as file:  
+        file.write("DATA = [\n")
+        for entry in data:
+            file.write(f" \n{entry},\n")
+        file.write("]\n")
 
-def add_expense(date, category, amount, description):
+
+def add_expenses(date, category, amount, description):
+    global DATA
+    expense = {
+            "date" : date,
+            "category" : category ,
+            "amount": amount,
+            "description" : description
+        }
     try:
-        with open(DATA, mode="a") as file:
-            writer = csv.writer(file)
-            writer.writerow([date,category,amount,description])
-            print(f"{color.GREEN} Expenses added successfully")
-    except IOError as e:
-        print(f"{color.RED} An IOError occured: {e}")
-    
+        DATA.append(expense)
+        print(f"{color.GREEN} \nExpenses added successfully. {color.RESET}")
+        save_data(DATA)
+
     except Exception as e:
-         print(f"{color.RED} An unexpected error occured: {e}")
+         print(f"{color.RED} \nAn unexpected error occured: {e}")
 
 
 def view_expenses():
-    expenses = []
-    if os.path.exists(DATA):
-        with open(DATA , mode="r") as file:
-            reader = csv.reader(file)
-            expenses = list(reader)
-        return expenses
-    
+     headers = list(DATA[0].keys())
+     data_values = [list(expense.values()) for expense in DATA]
+     return headers,data_values
 
 def view_summary():
     summary_record = defaultdict(float)
-    if os.path.exists(DATA):
-        with open(DATA, mode="r") as file:
-             reader = csv.reader(file)
-             for row in reader:
-                category = row[1]
-                amount = float(row[2])
-                summary_record[category] += amount
-        return summary_record
-
+    for expense in DATA:
+        category = expense['category']
+        amount =  float(expense['amount'])
+        summary_record[category] += amount
+    return (summary_record)
 
 def delete_entry(category):
-    with open(DATA, mode= "r") as file:
-        reader = csv.reader(file)
-        data = list(reader)
-
-    # Iterate over the data and remove the entry with the specified date
-    modified_data = [row for row in data if row[1] != category]
-    with open(DATA, mode="w") as file:
-            writer = csv.writer(file)
-            writer.writerows(modified_data)      
-    return modified_data
+    global DATA
+    initial_length = len(DATA)
+    DATA = [expense for expense in DATA if expense['category'] != category]
+    final_length = len(DATA)
+    if (initial_length == final_length):
+        print(f"{color.RED}No expenses found for category '{category}'.{color.RESET}")
+    else:
+        save_data(DATA)
+        print (f"{color.GREEN}Expenses with category '{category}' have been deleted.{color.RESET}")
 

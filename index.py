@@ -1,5 +1,5 @@
 import color
-from expenses import add_expense, view_expenses, view_summary, delete_entry
+from expenses import add_expenses, view_expenses, view_summary,delete_entry
 import re
 from collections import defaultdict
 from tabulate import tabulate
@@ -38,20 +38,20 @@ def main ():
         if choice == "1":
             date = input(f"{color.YELLOW} Enter date (YYYY-MM-DD):{color.RESET}")
             while not validate_date(date):
-                      date = input(f"{color.YELLOW}Enter date (YYYY-MM-DD): {color.RESET}")
+                    date = input(f"{color.YELLOW}Enter date (YYYY-MM-DD): {color.RESET}")
             category = input(f"{color.YELLOW} Enter category: {color.RESET}")
             amount =input(f"{color.YELLOW} Enter amount: {color.RESET}")
             while not validate_amount(amount):
-                      amount = input(f"{color.YELLOW}Enter amount: {color.RESET}")
+                    amount = input(f"{color.YELLOW}Enter amount: {color.RESET}")
             description =input(f"{color.YELLOW} Enter description: {color.RESET}")
-            add_expense(date,category,amount,description)
+            add_expenses(date,category,amount,description)
             break
 
 
         elif choice == "2":
-            value = view_expenses()
-            if value:
-                print(tabulate(value, headers=["Date", "Category", "Amount", "Description"], tablefmt="grid"))
+            headers, data_values = view_expenses() 
+            if headers and data_values:
+                print(tabulate(data_values, headers=headers, tablefmt="grid"))
                 print(f"{color.GREEN} Viewed expenses successfully{color.RESET}")
             else:
                  print(f"{color.RED} No expenses found.{color.RESET}")  
@@ -61,21 +61,20 @@ def main ():
         elif choice == "3":
             summary = view_summary()
             if summary:
-                summary_list = [[category,amount] for category, amount in summary.items()]
+                summary_list = [[category, amount] for category, amount in summary.items() ]
                 print(tabulate(summary_list, headers=["Category", "Amount"], tablefmt="grid"))
                 print (f"{color.GREEN} summarized expenses successfully")
             break
 
 
         elif choice == "4":
-             value = view_expenses()
-             if value:
-                print(tabulate(value, headers=["Date", "Category", "Amount", "Description"], tablefmt="grid"))
-                delete_item = input("Enter category to be deleted from above")
+             headers, data_values = view_expenses()
+             if headers and data_values:
+                print(tabulate(data_values, headers=headers, tablefmt="grid"))
+                delete_item = input(f"Enter category to be deleted from above: {color.RESET}")
                 delete_entry(delete_item)
-                print (f"{color.GREEN} {delete_item} deleted successfully")
              break
-
+        
         elif choice == "5":
             print (f"{color.GREEN} Exiting....")
             break
